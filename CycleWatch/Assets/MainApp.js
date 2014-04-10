@@ -42,9 +42,16 @@ var buttonHeight : int;
 var buttonStrings = new List.<String>();
 
 var counterText : GUIText;
+var fullCycleText : GUIText;
+var descriptionText : GUIText;
 
 var counterFullCycleAmount : float;
+var counterCurrentFullCycleAmount : float;
+
 var counterCurrentCycleAmount : float;
+var counterFirstCycleLength : float;
+var counterSecondCycleLength : float;
+var counterCurrentCycleId : int;
 
 var programPhase : int;
 
@@ -66,10 +73,14 @@ function Start () {
   
   buttonHeight = 50;
   counterFullCycleAmount = 0;
-  counterCurrentCycleAmount = counterFullCycleAmount;
+  counterCurrentFullCycleAmount = counterFullCycleAmount;
   
-  counterText.text = "";
+  counterFirstCycleLength = 0;
+  counterSecondCycleLength = 0;
+  counterCurrentCycleAmount = 0;
+  counterCurrentCycleId = 0;
   
+  hideAllText();
   programPhase = 1;
 }
 
@@ -102,6 +113,7 @@ function OnGUI(){
    //Counter Screen
    case 2 : 
      counterScreen();
+     counterSystem();
    break;
   }
   
@@ -160,9 +172,15 @@ function inputCycleScreen(){
     inputStrings[i] = GUI.TextField(Rect(displayStringPositionX + inputFieldPositionAdjust, displayStringPositionY + (i*inputFieldGap), inputFieldWidth, 20), inputStrings[i]);
   }
   
-  if(GUI.Button(Rect(buttonPosX, buttonPosY, buttonWidth, buttonHeight), buttonStrings[0])){
+  if(GUI.Button(Rect(buttonPosX, buttonPosY, buttonWidth, buttonHeight), buttonStrings[0])){  
+    counterFirstCycleLength = System.Int32.Parse(inputStrings[1]);
+    counterSecondCycleLength = System.Int32.Parse(inputStrings[2]);
+    counterCurrentCycleAmount = counterFirstCycleLength;
+    
+    counterFullCycleAmount = System.Int32.Parse(inputStrings[0]);
+    counterCurrentFullCycleAmount = counterFullCycleAmount;
+    counterCurrentCycleId = 1;
     programPhase = 2;
-    Debug.Log("Phase Changed");
   } 
 }
 
@@ -171,10 +189,12 @@ function inputCycleScreen(){
  *  The actual counter's screen with other infos.
  */
 function counterScreen(){
+  setCounterTexts();
   counterText.text = formatCounterText(counterCurrentCycleAmount);
   
   if(GUI.Button(Rect(buttonPosX, buttonPosY, buttonWidth, buttonHeight), buttonStrings[1])){
-    counterText.text = "";
+    hideAllText();
+    counterCurrentCycleId = 0;
     programPhase = 1;
   }
 }
@@ -185,8 +205,68 @@ function counterScreen(){
 function formatCounterText(amount : float){
   var formattedText : String;
   formattedText = amount.ToString();
-  formattedText += ".0s";
+  formattedText += "s";
   
   return formattedText;
+}
+
+/**
+ *  Hides all unnecessary texts
+ */
+function hideAllText(){
+  counterText.text = "";
+  fullCycleText.text = "";
+  descriptionText.text = ""; 
+}
+
+/**
+ *  Sets the counter texts
+ */ 
+function setCounterTexts(){
+  counterText.text = formatCounterText(counterCurrentCycleAmount);
+  fullCycleText.text = formatCounterText(counterCurrentFullCycleAmount);
+  descriptionText.text = "DESCRIPTION";
+}
+
+/**
+ *  Calculates the counting mechanism
+ */
+function counterSystem(){
+  counterCurrentFullCycleAmount -= Time.deltaTime;
+  counterCurrentFullCycleAmount = clampFloatTo2DP(counterCurrentFullCycleAmount);
+  
+  if(counterCurrentFullCycleAmount > 0){
+    counterCurrentCycleAmount -= Time.deltaTime;
+    counterCurrentCycleAmount = clampFloatTo2DP(counterCurrentCycleAmount);
+    if(counterCurrentCycleAmount <= 0){
+      switch(counterCurrentCycleId){
+        case 1 : 
+          counterCurrentCycleAmount = counterSecondCycleLength;
+          counterCurrentCycleId = 2;
+        break;
+        case 2 : 
+          counterCurrentCycleAmount = counterFirstCycleLength;
+          counterCurrentCycleId = 1;
+        break;
+      }
+    }
+  }
+  else{
+    hideAllText();
+    programPhase = 1;
+  }
+}
+
+/**
+ *  Clamps a float number up to 3 decimal places
+ *  Returns rounded float.
+ */ 
+function clampFloatTo2DP(number : float){
+  var tmp : int;
+  number *= 1000;
+  tmp = number;
+  number = tmp;
+  number /= 1000;
+  return number;
 }
 
