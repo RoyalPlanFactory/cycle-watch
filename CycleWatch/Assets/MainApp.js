@@ -79,10 +79,13 @@ function Update () {
   
   inputFieldWidth = Screen.width - inputFieldPositionAdjust - (boxMargins*3);
 
-  counterText.fontSize = fontResize(50);
+  counterText.fontSize = fontResize(80);
   
 }
 
+/**
+ *  The GUI the user sees.
+ */
 function OnGUI(){
   
   GUI.Label(Rect(boxMargins, boxMargins, boxWidth, boxHeight), appTitle);
@@ -99,6 +102,11 @@ function OnGUI(){
   GUI.Button(Rect(buttonPosX, buttonPosY, buttonWidth, buttonHeight), buttonStrings[0]); 
   
 }
+
+/**
+ *  Every text shown by the program is stored here.
+ *  Further development will be easier this way (e.g. localization files)
+ */
 
 function fillDisplayTexts() {
   appName = "Cycle Watch";
@@ -118,7 +126,7 @@ function fillDisplayTexts() {
 
 function fontResize(baseFontSize : int) {
   var newFontSize : int;
-  newFontSize = baseFontSize - (320 / (Screen.width / 10));
+  newFontSize = baseFontSize - (320 / (Screen.width / 20) * 2);
   if(newFontSize <= 5){
     newFontSize = 5;
   }
@@ -126,6 +134,9 @@ function fontResize(baseFontSize : int) {
   return newFontSize;
 }
 
+/**
+ *  Formats the counter's number to an easily readable format
+ */
 function formatCounterText(amount : float){
   var formattedText : String;
   formattedText = amount.ToString();
