@@ -1,0 +1,5 @@
+This project is licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
+See more on <https://creativecommons.org/licenses/by-nc-sa/4.0/>
+
+Furthermore we take no responsibility for any damage this project might cause. Use, fork, improve this project on your own behalf. 
+Royal Plan Factory, 2014 <http://rpfactory.net>
