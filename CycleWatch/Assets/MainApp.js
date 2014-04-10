@@ -46,6 +46,8 @@ var counterText : GUIText;
 var counterFullCycleAmount : float;
 var counterCurrentCycleAmount : float;
 
+var programPhase : int;
+
 var i : int;
 var RPFLogo : Texture;
 
@@ -66,7 +68,9 @@ function Start () {
   counterFullCycleAmount = 0;
   counterCurrentCycleAmount = counterFullCycleAmount;
   
-  counterText.text = formatCounterText(counterCurrentCycleAmount);
+  counterText.text = "";
+  
+  programPhase = 1;
 }
 
 function Update () {
@@ -87,19 +91,19 @@ function Update () {
  *  The GUI the user sees.
  */
 function OnGUI(){
+  basicDesign();
   
-  GUI.Label(Rect(boxMargins, boxMargins, boxWidth, boxHeight), appTitle);
-  GUI.DrawTexture(Rect(boxWidth - (logoSize/2) - logoPositionAdjust, (logoSize/2) - logoPositionAdjust, logoSize, logoSize), RPFLogo, ScaleMode.StretchToFill, true, 0);
-  
-  displayStringPositionX = 30;
-  displayStringPositionY = 90;
-  
-  for(i = 0; i < displayStrings.Count; i++){
-    GUI.Label(Rect(displayStringPositionX, displayStringPositionY + (i*inputFieldGap), Screen.width, Screen.height), displayStrings[i]);
-    inputStrings[i] = GUI.TextField(Rect(displayStringPositionX + inputFieldPositionAdjust, displayStringPositionY + (i*inputFieldGap), inputFieldWidth, 20), inputStrings[i]);
+  switch(programPhase){
+   //Main Screen
+   case 1 : 
+     inputCycleScreen();
+   break;
+   
+   //Counter Screen
+   case 2 : 
+     counterScreen();
+   break;
   }
-  
-  GUI.Button(Rect(buttonPosX, buttonPosY, buttonWidth, buttonHeight), buttonStrings[0]); 
   
 }
 
@@ -135,6 +139,47 @@ function fontResize(baseFontSize : int) {
 }
 
 /**
+ *  Only can be called by the OnGUI
+ *  Basic Design which can be seen in every phase of the Application.
+ */
+function basicDesign(){
+  GUI.Label(Rect(boxMargins, boxMargins, boxWidth, boxHeight), appTitle);
+  GUI.DrawTexture(Rect(boxWidth - (logoSize/2) - logoPositionAdjust, (logoSize/2) - logoPositionAdjust, logoSize, logoSize), RPFLogo, ScaleMode.StretchToFill, true, 0);
+}
+
+/**
+ *  Only can be called by the OnGUI
+ *  The app's main screen where the user can set up the cycles.
+ */
+function inputCycleScreen(){
+  displayStringPositionX = 30;
+  displayStringPositionY = 90;
+  
+  for(i = 0; i < displayStrings.Count; i++){
+    GUI.Label(Rect(displayStringPositionX, displayStringPositionY + (i*inputFieldGap), Screen.width, Screen.height), displayStrings[i]);
+    inputStrings[i] = GUI.TextField(Rect(displayStringPositionX + inputFieldPositionAdjust, displayStringPositionY + (i*inputFieldGap), inputFieldWidth, 20), inputStrings[i]);
+  }
+  
+  if(GUI.Button(Rect(buttonPosX, buttonPosY, buttonWidth, buttonHeight), buttonStrings[0])){
+    programPhase = 2;
+    Debug.Log("Phase Changed");
+  } 
+}
+
+/**
+ *  Only can be called by the OnGUI
+ *  The actual counter's screen with other infos.
+ */
+function counterScreen(){
+  counterText.text = formatCounterText(counterCurrentCycleAmount);
+  
+  if(GUI.Button(Rect(buttonPosX, buttonPosY, buttonWidth, buttonHeight), buttonStrings[1])){
+    counterText.text = "";
+    programPhase = 1;
+  }
+}
+
+/**
  *  Formats the counter's number to an easily readable format
  */
 function formatCounterText(amount : float){
@@ -144,3 +189,4 @@ function formatCounterText(amount : float){
   
   return formattedText;
 }
+
