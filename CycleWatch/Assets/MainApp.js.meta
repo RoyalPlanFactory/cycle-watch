@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: e495694d27226e143b7335ae1b9d0313
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - RPFLogo: {fileID: 2800000, guid: 2e4103b0031741d44bb60b123f7f328a, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
